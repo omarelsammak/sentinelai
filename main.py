@@ -4,7 +4,8 @@ from observer.metrics import Observer
 from judge.rules import Judge
 from trainer.train import Trainer
 import time
-
+import logging
+import random
 def notify():
     print("🚨 ALERT!")
 
@@ -20,12 +21,17 @@ while True:
     if frame is None:
         print("✅ End of video stream")
         break
+    # if random.random() < 0.05: 
+    #     frame = None
+
 
     prediction = detector.run(frame)
     metrics = observer.observe(prediction)
     decision = judge.evaluate(metrics)
 
-    print(f"{frame} | conf: {prediction['confidence']:.2f} | avg: {metrics['avg_confidence']:.2f} | decision: {decision}")
+
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+    logging.info(f"{frame} | conf: {prediction['confidence']:.2f} | avg: {metrics['avg_confidence']:.2f} | decision: {decision}")
 
     if decision == "ALERT":
         notify()
